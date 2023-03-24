@@ -9,8 +9,6 @@ import {
 
 import Root from "./routes/root";
 
-//import "./SwapMode.css";
-
 import "./index.css";
 
 import SwapMode from "./Swap Mode";

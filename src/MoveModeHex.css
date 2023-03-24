@@ -7,63 +7,6 @@ body {
   margin: 20px;
   padding: 0;
 }
-
-/*
-Russian blue pattern:
-#7be3f6
-#4499a9
-#276a76
-#133b43
-#03090a
-
-svg g {
-  fill: #d2dadb;
-  fill-opacity: 0.6;
-}
-svg g:hover {
-  fill: #9e9fad;
-  fill-opacity: 0.7;
-}
-svg g:hover text {
-  fill-opacity: 1;
-}
-svg g.q .hexagon {
-  fill: Red;
-  fill-opacity: 0.4;
-}
-svg g.r .hexagon {
-  fill: Green;
-  fill-opacity: 0.4;
-}
-svg g.s .hexagon {
-  fill: Blue;
-  fill-opacity: 0.4;
-}
-svg g.active  .hexagon {
-  fill: Coral;
-  fill-opacity: 0.9;
-}
-svg g polygon {
-  stroke: #000000;
-  stroke-width: 0.2;
-  transition: fill-opacity .5s;
-}
-svg g text {
-  font-size: 0.17em;
-  fill: rgb(0, 0, 0);
-  fill-opacity: 0.7;
-  transition: fill-opacity .5s;
-}
-svg path {
-  fill: none;
-  stroke: #03090a;
-  stroke-width: 0.2em;
-  stroke-opacity: 0.9;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-*/
-
 code {
   font-size: 1.2em;
 }
@@ -80,7 +23,7 @@ body {
   font-family: sans-serif;
   margin: 20px;
   padding: 0;
-}/*.cell:hover text{ fill-opacity: 1;}*/
+}
 .cell{
   fill-opacity: 0.3;
 }

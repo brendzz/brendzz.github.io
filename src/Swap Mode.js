@@ -3,7 +3,7 @@ import "./MoveMode.css";
 function Square({className,value, onSquareClick}) {
   return (
   <button 
-    className={"square "+className}
+    className={className}
     onClick={onSquareClick}>
       {value}
     </button>);
