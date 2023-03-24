@@ -3,11 +3,12 @@ import ReactDOM from "react-dom"
 
 import { createRoot } from "react-dom/client";
 import {
-  createBrowserRouter,
-  RouterProvider,
+  createHashRouter,
+  RouterProvider
 } from "react-router-dom";
 
 import Root from "./routes/root";
+
 //import "./SwapMode.css";
 
 import "./index.css";
@@ -16,7 +17,7 @@ import SwapMode from "./Swap Mode";
 import MoveMode from "./Move Mode";
 import MoveModeHex from "./Move Mode Hex";
 
-const router = createBrowserRouter([
+const router = createHashRouter([
   {
     path: "/",
     element: <Root />,
@@ -38,9 +39,7 @@ const router = createBrowserRouter([
 
 const root = createRoot(document.getElementById("root"));
 root.render(
-  <StrictMode>
-      <BrowserRouter>
+  <React.StrictMode>
     <RouterProvider router={router} />
-    </BrowserRouter>
-  </StrictMode>
+  </React.StrictMode>
 );

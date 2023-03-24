@@ -19,11 +19,11 @@ export default function Root() {
                     <div>
                         <nav>
                         <a href="javascript:void(0)" className="closebtn" onClick={() => navbarClose()}>&times;</a>
-                        <a href={`/SwapMode`}>Swap Mode</a>
+                        <a href={`#/SwapMode`}>Swap Mode</a>
                             <br></br>
-                                <a href={`/MoveMode`}>Move Mode</a>
+                                <a href={`#/MoveMode`}>Move Mode</a>
                             <br></br>
-                                <a href={`/MoveModeHex`}>Move Mode - Hexagon</a>
+                                <a href={`#/MoveModeHex`}>Move Mode - Hexagon</a>
                         </nav>
                     </div>
         </div>
