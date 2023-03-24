@@ -108,7 +108,6 @@ body {
   fill: #b925b9;
 }
 
-
 .cellUnavailableO g polygon{
   stroke:rgb(255, 65, 65);
   stroke-width: 0.5;
@@ -122,12 +121,6 @@ body {
 
 .inlineH{
   display:inline-block;
-}
-
-.board-row:after {
-  clear: both;
-  content: '';
-  display: table;
 }
 
 .status {

@@ -1,5 +1,9 @@
 import React, {useState} from "react";
 import "./MoveMode.css";
+import {
+  findBestMove
+} from './Minimax';
+
 function Square({className,value, onSquareClick}) {
   className="square "+className;
   return (
@@ -46,10 +50,36 @@ export default function Board() {
     if (classes[i] === "squareUnavailable" || classes[i] === "squareWinning"  || calculateWinner(squares)) {
       return;
     }
-    const nextClasses = classes.slice();
+
     
+    const nextClasses = classes.slice();
+    const nextSquares = squares.slice();
+   
+    if (!xisNext)
+    {
+        let newOTokens=oTokens;
+        let newXTokens=xTokens;
+        nextSquares,nextClasses,newOTokens,newXTokens=AIRandomMove(nextSquares,nextClasses,newOTokens,newXTokens);
+        const winnerCheck=calculateWinner(nextSquares);
+        if(winnerCheck){
+          nextClasses[winnerCheck[0]]="squareWinning";
+          nextClasses[winnerCheck[1]]="squareWinning";
+          nextClasses[winnerCheck[2]]="squareWinning";
+          nextClasses[winnerCheck[3]]="squareWinning";
+        }
+        setSquares(nextSquares);
+        setClasses(nextClasses);
+          
+        setXIsNext(!xIsNext);
+        setOTokens(newOTokens);
+        setXTokens(newXTokens);
+        setMoveNumber(moveNumber+1);
+        return;
+    }
+
+    let movingTokenIndex = classes.indexOf("squareMoving");
     //check if correct turn and selecting own piece
-    if ((xIsNext && squares[i]==="X") || (!xIsNext && squares[i]==="O"))
+    if (xIsNext && squares[i]==="X")
     {
       //if unselecting moving piece, unhighlight all adjacent ones
       if(classes[i] === "squareMoving")
@@ -114,8 +144,7 @@ export default function Board() {
       }
       return;
     }
-    const nextSquares = squares.slice();
-    let movingTokenIndex = classes.indexOf("squareMoving");
+    
 
     //if selecting an adjacent place to move to
     if(classes[i] === "squareAdjacent" && movingTokenIndex != -1 || classes[i] === "squareAdjacentReplace" && movingTokenIndex != -1)
@@ -349,24 +378,6 @@ function calculateWinner(squares) {
   return null;
 }
 function calculateAdjacent(i) {
-  /*const adjacentSquares = [
-   [1, 4, 5], //0
-   [0, 4, 5, 6, 2],
-   [1, 5, 6, 7, 3],
-   [2, 6, 7],
-   [0, 1, 5, 9, 8], //4
-   [0, 1, 2, 6, 10, 9, 8, 4],
-   [1, 2, 3, 7, 11, 10, 9, 5],
-   [3, 2, 6, 10, 11],
-   [4, 5, 9, 13, 12], //8
-   [4, 5, 6, 10, 14, 13, 12, 8],
-   [5, 6, 7, 11, 15, 14, 13, 9],
-   [7, 6, 10, 14, 15],
-   [8, 9, 13], //12
-   [12, 8, 9, 10, 14],
-   [13, 9, 10, 11, 15],
-   [14, 10, 11],
- ];*/
  const noBordersAdjacentSquares = [
    [1, 4, 5,7, 3, 15, 12, 13], //0
    [0, 4, 5, 6, 2, 12, 13, 14],
@@ -387,4 +398,60 @@ function calculateAdjacent(i) {
  ];
  //return adjacentSquares[i];
  return noBordersAdjacentSquares[i];
+}
+
+function AIRandomMove(cells,classes,oTokens,xTokens){
+  let foundLegalMove=false;
+  let i =0;
+  let min=0;
+  let max=cells.length-1;
+  while (!foundLegalMove){
+    let randomCell = Math.floor(Math.random()*(max-min +1))+min;
+    if (classes[randomCell] === "squareEmpty" && oTokens>0)
+    {
+      cells[randomCell]="O";
+      oTokens=oTokens-1;
+      break;
+      
+    }
+    if (cells[randomCell] === "O" && classes[randomCell] ==="squareAvailable"){
+        let adj = calculateAdjacent(randomCell);
+        let randomDirection = Math.floor(Math.random()*7);
+        for (let r=0;r<8;r++)
+        {
+          if (classes[adj[randomDirection]] === "squareEmpty")
+          {
+            classes[randomCell]="squareEmpty";
+            classes[adj[randomDirection]]="squareAvailable";
+            cells[[adj[randomDirection]]]="O";
+            break;
+          }
+          else if (classes[adj[randomDirection] === "squareAvailable"] && cells[adj[randomDirection]]==="X")
+          {
+              classes[randomCell]="squareEmpty";
+              classes[adj[randomDirection]]="squareUnavailable";
+              cells[[adj[randomDirection]]]="O";
+              xTokens=xTokens+1;
+              break;
+          }
+          else{
+              randomDirection=(randomDirection+1)%8;
+          }
+          if (r===8)
+          {
+              alert("this shouldn't happen i hope");
+          }
+      }
+    }
+    i=i+1;
+    if (i>1000){ //im pretty srue it will break if this happens
+      break;
+    }
+  }
+  await(2000);
+  alert("i win");
+  return(cells,squares,oTokens,xTokens);
+}
+function timeout(delay) {
+  return new Promise( res => setTimeout(res, delay) );
 }
