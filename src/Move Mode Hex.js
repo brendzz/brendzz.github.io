@@ -51,7 +51,7 @@ export default function Board() {
   function handleClick(i) {
    
     //if winner found
-    if (classes[i] === "cellUnavailableX" ||classes[i] === "cellUnavailableO" || calculateWinner(i,cells) || winnerFound) {
+    if (classes[i] === "cellUnavailableX" ||classes[i] === "cellUnavailableO" || classes[i] === "cellWinning" || calculateWinner(i,cells) || winnerFound) {
       return;
     }
     const nextClasses = classes.slice();

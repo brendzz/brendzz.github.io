@@ -1,9 +1,9 @@
 import React, {useState} from "react";
-import "./MoveMode.css";
+import "./SwapMode.css";
 function Square({className,value, onSquareClick}) {
   return (
   <button 
-    className={className}
+    className={"square "+className}
     onClick={onSquareClick}>
       {value}
     </button>);
@@ -24,7 +24,7 @@ export default function Board() {
   const [xIsNext, setXIsNext] = useState(true);
   const [moveStatus, setMoveStatus] = useState(-1);
   const [squares, setSquares] = useState(Array(16).fill(null));
-  const [classes, setClasses] = useState(Array(16).fill("square"));
+  const [classes, setClasses] = useState(Array(16).fill("squareEmpty"));
   const [moveNumber,setMoveNumber] = useState(1);
   function handleClick(i) {
     /* if (squares[i] || calculateWinner(squares)) {
@@ -32,7 +32,7 @@ export default function Board() {
   }*/
 
     //if winner found
-    if (classes[i] === "squareUnavailable" || calculateWinner(squares)) {
+    if (classes[i] === "squareUnavailable"|| classes[i] === "squareWinning" || calculateWinner(squares)) {
       return;
     }
     const nextSquares = squares.slice();
@@ -55,7 +55,7 @@ export default function Board() {
     }
     
     //if already has value
-    if (classes[i] === "square")
+    if (classes[i] === "squareEmpty")
     {
       nextClasses[i] = "squareAvailable";
     }
@@ -79,6 +79,13 @@ export default function Board() {
   }
 
   const winner = calculateWinner(squares);
+  const winnerCheck = calculateWinner(squares);
+  if(winnerCheck){
+    nextClasses[winnerCheck[0]]="squareWinning";
+    nextClasses[winnerCheck[1]]="squareWinning";
+    nextClasses[winnerCheck[2]]="squareWinning";
+    nextClasses[winnerCheck[3]]="squareWinning";
+}
   let status;
   if (winner) {
     status = "Winner: " + winner;
@@ -100,11 +107,12 @@ export default function Board() {
       <div className="container">
       <h1>Swap Mode</h1>
           <div className="row">
-          <div className="col-sm-6">
+          <div className="status"><h2>{status}</h2></div>
+        <div className="displayMoveStatus"><h2>{displayMoveStatus}</h2></div>
+          <div className="col-sm-auto">
    
 
-        <div className="status"><h2>{status}</h2></div>
-        <div className="displayMoveStatus"><h2>{displayMoveStatus}</h2></div>
+       
       <div className="board-row">
         <Square className={classes[0]} value={squares[0]} onSquareClick={() => handleClick(0)}  />
         <Square className={classes[1]} value={squares[1]} onSquareClick={() => handleClick(1)}  />

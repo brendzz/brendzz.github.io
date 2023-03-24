@@ -17,6 +17,8 @@ function InfoBox({status,displayMoveStatus,oTokens,xTokens}){
     <React.Fragment>
   <div className="status"><h1>{status}</h1></div>
   <div className="displayMoveStatus"><h1>{displayMoveStatus}</h1></div>
+  <h2>X has {xTokens} / 6 pieces left</h2>
+  <h2>O has {oTokens} / 6 pieces left</h2>
   <br></br>
   <h2><strong>Rules</strong></h2>
   <h3>- On your turn you can either</h3>
@@ -27,9 +29,7 @@ function InfoBox({status,displayMoveStatus,oTokens,xTokens}){
   <h3>- Adjacency crosses over the borders i.e. Left side is adjacent to right side, top is adjacent to bottom and so on</h3>
   <h3>- You have a limited supply of 6 pieces (pieces are returned to your supply on being replaced)</h3>
   <h3>- Four of your pieces in a row wins (including across borders via adjacency) </h3>
-  <br></br>
-  <h2>X has {xTokens} / 6 pieces left</h2>
-  <h2>O has {oTokens} / 6 pieces left</h2>
+
 </React.Fragment>);
 }
 export default function Board() {
@@ -47,7 +47,7 @@ export default function Board() {
  
 
     //if winner found
-    if (classes[i] === "squareUnavailable" || calculateWinner(squares)) {
+    if (classes[i] === "squareUnavailable" || classes[i] === "squareWinning"  || calculateWinner(squares)) {
       return;
     }
     const nextClasses = classes.slice();
@@ -215,11 +215,13 @@ export default function Board() {
  
   return (
     <React.Fragment>
-      
-        <div className="container">
-          <h1>Move Mode</h1>
-          <div className="row">
-          <div className="col-sm-auto">
+            <h1>Move Mode</h1>
+        <div className="container-fluid">
+    
+          <div className="row justify-content-center">
+
+          <div className="col col-auto justify-content-center">
+            
                       <div className="board-row">
                         <Square className={classes[15]} value={squares[15]} onSquareClick={() => handleClick(15)} />
                       </div>
@@ -234,15 +236,15 @@ export default function Board() {
                         <Square className={classes[11]} value={squares[11]} onSquareClick={() => handleClick(11)} />
                       </div>
                       <div className="board-row">
-                        
+                         
                         <Square className={classes[15]} value={squares[15]} onSquareClick={() => handleClick(15)} />
                       </div>
-        <br></br>
+                      <br></br>     
           <div className="board-row">
                         <Square className={classes[3]} value={squares[3]} onSquareClick={() => handleClick(3)} />
                       </div>
                     </div>
-            <div className="col-sm-auto">
+            <div className="col col-auto justify-content-center">
 
               <div className="board-row">
               <Square className={classes[12]} value={squares[12]} onSquareClick={() => handleClick(12)} />
@@ -284,7 +286,7 @@ export default function Board() {
                 <Square className={classes[3]} value={squares[3]} onSquareClick={() => handleClick(3)} />
               </div>
             </div>
-            <div className="col-sm-auto">
+            <div className="col col-auto justify-content-center">
               <div className="board-row">
                 <Square className={classes[12]} value={squares[12]} onSquareClick={() => handleClick(12)} />
               </div>
@@ -306,7 +308,8 @@ export default function Board() {
                 <Square className={classes[0]} value={squares[0]} onSquareClick={() => handleClick(0)}  />
               </div>
             </div>
-            <div className="col-sm">
+            </div><div className="row">
+            <div className="col">
               <InfoBox status={status} displayMoveStatus={displayMoveStatus} oTokens = {oTokens} xTokens={xTokens} />
             </div>
       </div>
