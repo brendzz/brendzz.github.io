@@ -7,3 +7,5 @@ Various tic tac toe games made in react.js
 3. Move Mode Hex - Same as standard Move Move above except played on a hexagon grid. Same adjacency rules with edges wrapping around on each other, with the exception that middle square of the board is inaccessible and adjancency does not pass through it. Four in a row to win (note this must be a straight line).
 
 Based on the React.js tutorial: https://react.dev/learn/tutorial-tic-tac-toe
+
+Play online here: https://brendzz.github.io/
