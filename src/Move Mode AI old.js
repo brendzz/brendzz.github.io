@@ -47,7 +47,7 @@ export default function Game() {
   );
 }
 function Board() {
-  const [winningPlayer, setWinningPlayer] = useState(null);
+  const [xIsNext, setXIsNext] = useState(true);
   const [xTokens,setXTokens]= useState(6);
   const [oTokens,setOTokens]= useState(6);
   const [squares, setSquares] = useState(Array(16).fill(null));
@@ -59,14 +59,87 @@ function Board() {
     const nextClasses = classes.slice();
     const nextSquares = squares.slice();
     //if winner found
-    if ((squares[i] === "O" && classes[i] !== "squareAdjacentReplace") || classes[i] === "squareWinning"  || calculateWinner(squares) || classes[i] === "squareUnavailable") {
-      return;
+if (classes[i] === "squareWinning"  || calculateWinner(squares)) {
+  return;
+}
+    if (!xIsNext)
+    {  
+        let foundLegalMove=false;
+        let i =0;
+        let min=0;
+        let max=nextSquares.length-1;
+        while (!foundLegalMove){
+          let randomCell = Math.floor(Math.random()*(max-min +1))+min;
+          if (nextClasses[randomCell] === "squareEmpty" && oTokens>0)
+          {
+            nextSquares[randomCell]="O";
+            nextClasses[randomCell]="squareAvailable";
+            setOTokens(oTokens-1);
+            foundLegalMove=true;
+            break;
+            
+          }
+          if (nextSquares[randomCell] === "O" && nextClasses[randomCell] ==="squareAvailable"){
+              let adj = calculateAdjacent(randomCell);
+              let randomDirection = Math.floor(Math.random()*7);
+              for (let r=0;r<8;r++)
+              {
+                if (nextClasses[adj[randomDirection]] === "squareEmpty")
+                {
+                  nextSquares[randomCell]=null;
+                  nextClasses[randomCell]="squareEmpty";
+                  nextClasses[adj[randomDirection]]="squareAvailable";
+                  nextSquares[[adj[randomDirection]]]="O";
+                  foundLegalMove=true;
+                  break;
+                }
+                else if (nextClasses[adj[randomDirection]] === "squareAvailable" && nextSquares[adj[randomDirection]]==="X")
+                {
+                    nextSquares[randomCell]=null;
+                    nextClasses[randomCell]="squareEmpty";
+                    nextClasses[adj[randomDirection]]="squareUnavailable";
+                    nextSquares[[adj[randomDirection]]]="O";
+                    setXTokens(xTokens+1);
+                    foundLegalMove=true;
+                    break;
+                }
+                else{
+                    randomDirection=(randomDirection+1)%8;
+                }
+                if (r===8)
+                {
+                    alert("this shouldn't happen i hope");
+                }
+            }
+          }
+          i=i+1;
+          if (i>1000){ //im pretty srue it will break if this happens
+            break;
+          }
+        }
+        
+        const winnerCheck=calculateWinner(nextSquares);
+        if(winnerCheck){
+          nextClasses[winnerCheck[0]]="squareWinning";
+          nextClasses[winnerCheck[1]]="squareWinning";
+          nextClasses[winnerCheck[2]]="squareWinning";
+          nextClasses[winnerCheck[3]]="squareWinning";
+        }
+        setSquares(nextSquares);
+        setClasses(nextClasses);
+        setXIsNext(!xIsNext);
+        setMoveNumber(moveNumber+1);
+        return;
     }
+   if (classes[i] === "squareUnavailable")
+   {
+    return;
+   }
     
 
     let movingTokenIndex = classes.indexOf("squareMoving");
     //check if correct turn and selecting own piece
-    if (squares[i]==="X")
+    if (xIsNext && squares[i]==="X")
     {
       //if unselecting moving piece, unhighlight all adjacent ones
       if(classes[i] === "squareMoving")
@@ -105,7 +178,7 @@ function Board() {
             }
             else if (classes[j] === "squareAvailable" )
             {
-              if((squares[j] !== "X") ){
+              if((xIsNext && squares[j] !== "X") ||(!xIsNext && squares[j] !== "O") ){
                 nextClasses[j] = "squareAdjacentReplace";
               }
             }
@@ -137,7 +210,7 @@ function Board() {
     if(classes[i] === "squareAdjacent" && movingTokenIndex != -1 || classes[i] === "squareAdjacentReplace" && movingTokenIndex != -1)
     {
       
-      if (squares[movingTokenIndex]==="X"){
+      if (xIsNext && squares[movingTokenIndex]==="X"){
         nextSquares[i]="X";
         if (classes[i] === "squareAdjacentReplace"){
           nextClasses[i] = "squareUnavailable";
@@ -145,9 +218,17 @@ function Board() {
         }
         else{nextClasses[i]="squareAvailable";}
       }
-      
-      
-     
+      else if (!xIsNext && squares[movingTokenIndex]==="O"){
+        nextSquares[i]="O";
+        if (classes[i] === "squareAdjacentReplace"){
+          nextClasses[i] = "squareUnavailable";
+          setXTokens(xTokens+1);
+        }
+        else{nextClasses[i]="squareAvailable";}
+      }
+      else{
+        return;
+      }
 
       
       //reset all adjacent stuff
@@ -171,211 +252,49 @@ function Board() {
             nextClasses[adjacentSquares[a]] = "squareAvailable"
           }
         }
-    }
+      }
       //if placing an X
-    if (squares[i]!=="X" && classes[i]==="squareEmpty" && xTokens>0 && movingTokenIndex === -1) {
+    else if (xIsNext && squares[i]!=="X" && classes[i]==="squareEmpty" && xTokens>0 && movingTokenIndex === -1) {
       nextSquares[i] = "X";
       nextClasses[i] = "squareAvailable";
       if(xTokens>0){
       setXTokens(xTokens-1);
       }
     } 
+    //if placing an O
+    else if(!xIsNext && squares[i]!=="O" && classes[i]==="squareEmpty" && oTokens>0 && movingTokenIndex === -1){
+      nextSquares[i] = "O";
+      nextClasses[i] = "squareAvailable";
+      if(oTokens>0){
+        setOTokens(oTokens-1);
+        }
+    }
+    else{
+      return;
+    }
     
-    
-   let winnerCheck=calculateWinner(nextSquares);
+   const winnerCheck=calculateWinner(nextSquares);
     if(winnerCheck){
       nextClasses[winnerCheck[0]]="squareWinning";
       nextClasses[winnerCheck[1]]="squareWinning";
       nextClasses[winnerCheck[2]]="squareWinning";
       nextClasses[winnerCheck[3]]="squareWinning";
-      setWinningPlayer("X - Player");
     } 
     setSquares(nextSquares);
     setClasses(nextClasses);
 
-    
+    setXIsNext(!xIsNext);
 
     setMoveNumber(moveNumber+1);
-
-//ai turn
-if (winnerCheck)
-{
-  return;
-}
-    
-let foundLegalMove=false;
-let counter =0;
-let min=0;
-let max=nextSquares.length-1;
-  
-
-let winCombos=getWinningLines();
-let indexOfCleanWinCombos = [];
-
-let playerCount = 0;
-let aiCount = 0;
-let block = -1;
-let move = -1;
-let placeToMove = -1;
-//check for winning combos, count number of pieces on each line
-winCombos.forEach(function(arr, indexOne) {
-playerCount = 0;
-aiCount = 0;
-arr.forEach(function(innerValues, indexTwo) {
-  if (nextSquares[innerValues] === "X") {
-    playerCount ++;
-  }
-  if (nextSquares[innerValues] === "O") {
-    aiCount ++;
-  }
-});
-//win if possible
-if (aiCount === 3) {
-  for (let j = 0; j < arr.length; j++) {
-    if (nextClasses[arr[j]]==="squareEmpty" && oTokens>0) {
-      nextSquares[arr[j]]="O";
-        nextClasses[arr[j]]="squareAvailable";
-        setOTokens(oTokens-1);
-        foundLegalMove=true;
-    }
-  }
-}
-//block if possible
-if (playerCount === 3) {
-  for (let j = 0; j < arr.length; j++) {
-    if (nextClasses[arr[j]]==="squareEmpty" && oTokens>0) {
-      block = arr[j];
-    }
-    else if ((nextSquares[arr[j]] === "X" && nextClasses[arr[j]]==="squareAvailable" || 
-    nextClasses[arr[j]]==="squareEmpty")){
-      let adjacentPiecesToMove = calculateAdjacent(arr[j]);
-      adjacentPiecesToMove.forEach(function(pieceToMove,indexOfPiece){
-        if (nextSquares[pieceToMove] === "O" && nextClasses[pieceToMove] === "squareAvailable"){
-            move = pieceToMove;
-            placeToMove = arr[j];
-        }
-      });
-    }
-  }
-}
-if (playerCount === 4 || aiCount === 4) {
-  return;
-}
-//place piece along winning line if possible
-if (playerCount === 0) {
-  indexOfCleanWinCombos.push([aiCount, arr]);
-}
-});
-if (block !== -1) {
-nextSquares[block]="O";
-        nextClasses[block]="squareAvailable";
-        setOTokens(oTokens-1);
-        foundLegalMove=true;
-}
-else if (move !== -1 && placeToMove !== -1)
-{
-  nextSquares[move]=null;
-  nextClasses[move]="squareEmpty";
-  
-  if (nextSquares[placeToMove] === "X"){
-    nextClasses[placeToMove] = "squareUnavailable";
-    setXTokens(xTokens + 1);
-  }
-  else{
-    nextClasses[placeToMove]="squareAvailable";
-  }
-  nextSquares[placeToMove]="O";
-  foundLegalMove=true;
-
-}
-if (!foundLegalMove) {
-
-    //loop until find random valid move
-    while (!foundLegalMove){
-      //get random square
-      let randomCell = Math.floor(Math.random()*(max-min +1))+min;
-
-      //if empty and can place token, plance token
-      if (nextClasses[randomCell] === "squareEmpty" && oTokens>0)
-      {
-        nextSquares[randomCell]="O";
-        nextClasses[randomCell]="squareAvailable";
-        setOTokens(oTokens-1);
-        foundLegalMove=true;
-        break;
-        
-      }
-      //if full of own piece and can be moved, find spot to move to
-      if (nextSquares[randomCell] === "O" && nextClasses[randomCell] ==="squareAvailable"){
-          let adj = calculateAdjacent(randomCell);
-
-          //pick random direction
-          let randomDirection = Math.floor(Math.random()*7);
-          for (let r=0;r<8;r++)
-          {
-            //if empty, move there
-            if (nextClasses[adj[randomDirection]] === "squareEmpty")
-            {
-              nextSquares[randomCell]=null;
-              nextClasses[randomCell]="squareEmpty";
-              nextClasses[adj[randomDirection]]="squareAvailable";
-              nextSquares[[adj[randomDirection]]]="O";
-              foundLegalMove=true;
-              break;
-            }
-            //if full of available X, move and capture
-            else if (nextClasses[adj[randomDirection]] === "squareAvailable" && nextSquares[adj[randomDirection]]==="X")
-            {
-                nextSquares[randomCell]=null;
-                nextClasses[randomCell]="squareEmpty";
-                nextClasses[adj[randomDirection]]="squareUnavailable";
-                nextSquares[[adj[randomDirection]]]="O";
-                setXTokens(xTokens+1);
-                foundLegalMove=true;
-                break;
-            }
-
-            //otherwsie look in next direction
-            else{
-                randomDirection=(randomDirection+1)%8;
-            }
-            
-        }
-      }
-      i=i+1;
-      //extremely unlikely but potential ai never finds a move in 1000 goes, quick exit con to ensure no inifnite loops
-      if (i>1000){ //im pretty srue it will break if this happens
-        break;
-      }
-    }
-    
-    
-    
-}
-    winnerCheck=calculateWinner(nextSquares);
-    if(winnerCheck){
-      nextClasses[winnerCheck[0]]="squareWinning";
-      nextClasses[winnerCheck[1]]="squareWinning";
-      nextClasses[winnerCheck[2]]="squareWinning";
-      nextClasses[winnerCheck[3]]="squareWinning";
-      setWinningPlayer("O - AI");
-    } 
-    setSquares(nextSquares);
-    setClasses(nextClasses);
-
-   
-
-    setMoveNumber(moveNumber+1);
-
   }
 
   const winner = calculateWinner(squares);
 
   let status;
   if (winner) {
-    status = "Winner: " + winningPlayer;
+    status = "Winner: " + (!xIsNext ? "X" : "O");
   } else {
-    status = "Current player: " + (winner ? winningPlayer : "X - Player");
+    status = "Current player: " + (xIsNext ? "X" : "O");
   }
   let displayMoveStatus="Move Number: " + moveNumber;
   
@@ -485,9 +404,8 @@ if (!foundLegalMove) {
   );
 }
 
-function getWinningLines()
-{
-  return[
+function calculateWinner(squares) {
+   const lines = [
     [0, 1, 2, 3],
     [4, 5, 6, 7],
     [8, 9, 10, 11],
@@ -509,9 +427,6 @@ function getWinningLines()
      [13,8,7,2],
      [14,9,4,3],
   ];
-}
-function calculateWinner(squares) {
-   const lines=getWinningLines();
 
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c,d] = lines[i];
@@ -545,3 +460,65 @@ function calculateAdjacent(i) {
  //return adjacentSquares[i];
  return noBordersAdjacentSquares[i];
 }
+
+/*function AIRandomMove(cells,classes,oTokens,xTokens){
+  
+  let foundLegalMove=false;
+  let i =0;
+  let min=0;
+  let max=cells.length-1;
+  while (!foundLegalMove){
+    let randomCell = Math.floor(Math.random()*(max-min +1))+min;
+    if (classes[randomCell] === "squareEmpty" && oTokens>0)
+    {
+      cells[randomCell]="O";
+      classes[randomCell]="squareAvailable";
+      oTokens=oTokens-1;
+      alert("New Piece at "+randomCell);
+      foundLegalMove=true;
+      break;
+      
+    }
+    if (cells[randomCell] === "O" && classes[randomCell] ==="squareAvailable"){
+        let adj = calculateAdjacent(randomCell);
+        let randomDirection = Math.floor(Math.random()*7);
+        for (let r=0;r<8;r++)
+        {
+          if (classes[adj[randomDirection]] === "squareEmpty")
+          {
+            cells[randomCell]=null;
+            classes[randomCell]="squareEmpty";
+            classes[adj[randomDirection]]="squareAvailable";
+            cells[[adj[randomDirection]]]="O";
+            alert("Moving piece from "+randomCell + " to empty square "+adj[randomDirection]);
+            foundLegalMove=true;
+            break;
+          }
+          else if (classes[adj[randomDirection] === "squareAvailable"] && cells[adj[randomDirection]]==="X")
+          {
+              cells[randomCell]=null;
+              classes[randomCell]="squareEmpty";
+              classes[adj[randomDirection]]="squareUnavailable";
+              cells[[adj[randomDirection]]]="O";
+              xTokens=xTokens+1;
+              alert("Moving piece from "+randomCell + " to take over "+adj[randomDirection]);
+              foundLegalMove=true;
+              break;
+          }
+          else{
+              randomDirection=(randomDirection+1)%8;
+          }
+          if (r===8)
+          {
+              alert("this shouldn't happen i hope");
+          }
+      }
+    }
+    i=i+1;
+    if (i>1000){ //im pretty srue it will break if this happens
+      break;
+    }
+  }
+
+  return({cells,classes,oTokens,xTokens});
+}*/

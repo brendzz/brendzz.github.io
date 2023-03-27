@@ -8,4 +8,6 @@ Various tic tac toe games made in react.js
 
 Based on the React.js tutorial: https://react.dev/learn/tutorial-tic-tac-toe
 
+AI is a modified version of the 4x4 Tic Tac Toe AI from @Everyone on Codepen: https://codepen.io/Everyone/pen/NejNOd
+
 Play online here: https://brendzz.github.io/

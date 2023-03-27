@@ -18,12 +18,14 @@ export default function Root() {
         <div id="mySidenav" className={sideNavClass}>
                     <div>
                         <nav>
-                        <a href="javascript:void(0)" className="closebtn" onClick={() => navbarClose()}>&times;</a>
-                        <a href={`#/SwapMode`}>Swap Mode</a>
+                        <a className="closebtn" onClick={() => navbarClose()}>&times;</a>
+                        <a href={`#/SwapMode`}>Tic Tac Swap</a>
                             <br></br>
-                                <a href={`#/MoveMode`}>Move Mode</a>
+                                <a href={`#/MoveMode`}>Tic Tac Torus</a>
                             <br></br>
-                                <a href={`#/MoveModeHex`}>Move Mode - Hexagon</a>
+                                <a href={`#/MoveModeHex`}>Tic Tac Torus - Hexagon</a>
+                              <br></br>
+                                <a href={`#/MoveModeAI`}>Tic Tac Torus - AI</a>
                         </nav>
                     </div>
         </div>

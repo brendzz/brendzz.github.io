@@ -224,7 +224,7 @@ export default function Board() {
   
   return (
     <React.Fragment>
-  
+   <h1>Tic Tac Torus Hex</h1>
         <div className="container">
         <HexGrid width={1200} height={800} viewBox="-50 -50 100 100"> 
         

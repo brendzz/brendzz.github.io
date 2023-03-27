@@ -211,7 +211,7 @@ export default function Board() {
  
   return (
     <React.Fragment>
-            <h1>Move Mode</h1>
+            <h1>Tic Tac Torus (Move Mode)</h1>
         <div className="container-fluid">
     
           <div className="row justify-content-center">

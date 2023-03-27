@@ -14,6 +14,7 @@ import "./index.css";
 import SwapMode from "./Swap Mode";
 import MoveMode from "./Move Mode";
 import MoveModeHex from "./Move Mode Hex";
+import MoveModeAI from "./Move Mode AI";
 
 const router = createHashRouter([
   {
@@ -31,6 +32,10 @@ const router = createHashRouter([
   {
     path: "MoveModeHex",
     element: <MoveModeHex/>,
+  },
+  {
+    path: "MoveModeAI",
+    element: <MoveModeAI/>,
   },]
 },
 ]);

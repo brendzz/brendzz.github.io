@@ -11,6 +11,8 @@ function Square({className,value, onSquareClick}) {
 function InfoBox({status,displayMoveStatus}){
   return (
     <React.Fragment>
+       <div className="status"><h2>{status}</h2></div>
+        <div className="displayMoveStatus"><h2>{displayMoveStatus}</h2></div>
   <h2><strong>Rules</strong></h2>
   <h3>- On your turn you can either</h3>
   <ul><li><h3>Place a piece in an empty square</h3> </li>
@@ -64,6 +66,13 @@ export default function Board() {
       nextClasses[i] = "squareUnavailable";
       nextMoveStatus = 0;
     }
+    const winnerCheck = calculateWinner(nextSquares);
+    if(winnerCheck){
+    nextClasses[winnerCheck[0]]="squareWinning";
+    nextClasses[winnerCheck[1]]="squareWinning";
+    nextClasses[winnerCheck[2]]="squareWinning";
+    nextClasses[winnerCheck[3]]="squareWinning";
+    }
     setSquares(nextSquares);
     setClasses(nextClasses);
     if(nextMoveStatus === 1)
@@ -79,16 +88,10 @@ export default function Board() {
   }
 
   const winner = calculateWinner(squares);
-  const winnerCheck = calculateWinner(squares);
-  if(winnerCheck){
-    nextClasses[winnerCheck[0]]="squareWinning";
-    nextClasses[winnerCheck[1]]="squareWinning";
-    nextClasses[winnerCheck[2]]="squareWinning";
-    nextClasses[winnerCheck[3]]="squareWinning";
-}
+  
   let status;
   if (winner) {
-    status = "Winner: " + winner;
+    status = "Winner: " + (!xIsNext ? "X" : "O");
   } else {
     status = "Next player: " + (xIsNext ? "X" : "O");
   }
@@ -106,10 +109,10 @@ export default function Board() {
     <React.Fragment>
       <div className="container">
       <h1>Swap Mode</h1>
-          <div className="row">
-          <div className="status"><h2>{status}</h2></div>
-        <div className="displayMoveStatus"><h2>{displayMoveStatus}</h2></div>
-          <div className="col-sm-auto">
+          <div className="row justify-content-center">
+          
+         
+          <div className="col col-auto justify-content-center">
    
 
        
@@ -138,10 +141,12 @@ export default function Board() {
         <Square className={classes[15]} value={squares[15]} onSquareClick={() => handleClick(15)} />
       </div>
       </div>
-      <div className="col-sm">
+      </div>
+      <div className="row justify-content-center">
+      <div className="col">
               <InfoBox status={status} displayMoveStatus={displayMoveStatus} />
             </div>
-    </div>
+            </div>
     </div>
     </React.Fragment>
   );
@@ -180,7 +185,7 @@ function calculateWinner(squares) {
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c,d] = lines[i];
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c] && squares[a] === squares[d]) {
-      return squares[a];
+      return [a,b,c,d];
     }
   }
   return null;
