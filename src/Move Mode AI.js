@@ -58,6 +58,8 @@ function Board() {
 
     const nextClasses = classes.slice();
     const nextSquares = squares.slice();
+    let nextOTokens = oTokens;
+    let nextXTokens = xTokens;
     //if winner found
     if ((squares[i] === "O" && classes[i] !== "squareAdjacentReplace") || classes[i] === "squareWinning"  || calculateWinner(squares) || classes[i] === "squareUnavailable") {
       return;
@@ -141,7 +143,7 @@ function Board() {
         nextSquares[i]="X";
         if (classes[i] === "squareAdjacentReplace"){
           nextClasses[i] = "squareUnavailable";
-          setOTokens(oTokens+1);
+          nextOTokens=nextOTokens+1;
         }
         else{nextClasses[i]="squareAvailable";}
       }
@@ -173,11 +175,11 @@ function Board() {
         }
     }
       //if placing an X
-    if (squares[i]!=="X" && classes[i]==="squareEmpty" && xTokens>0 && movingTokenIndex === -1) {
+    if (squares[i]!=="X" && classes[i]==="squareEmpty" && nextXTokens>0 && movingTokenIndex === -1) {
       nextSquares[i] = "X";
       nextClasses[i] = "squareAvailable";
-      if(xTokens>0){
-      setXTokens(xTokens-1);
+      if(nextXTokens>0){
+      nextXTokens=nextXTokens-1;
       }
     } 
     
@@ -232,18 +234,18 @@ arr.forEach(function(innerValues, indexTwo) {
 //win if possible
 if (aiCount === 3) {
   for (let j = 0; j < arr.length; j++) {
-    if (nextClasses[arr[j]]==="squareEmpty" && oTokens>0) {
+    if (nextClasses[arr[j]]==="squareEmpty" && nextOTokens>0) {
       nextSquares[arr[j]]="O";
         nextClasses[arr[j]]="squareAvailable";
-        setOTokens(oTokens-1);
+        nextOTokesn=nextOTokens-1;
         foundLegalMove=true;
     }
   }
 }
 //block if possible
-if (playerCount === 3) {
+else if (playerCount === 3) {
   for (let j = 0; j < arr.length; j++) {
-    if (nextClasses[arr[j]]==="squareEmpty" && oTokens>0) {
+    if (nextClasses[arr[j]]==="squareEmpty" && nextOTokens>0) {
       block = arr[j];
     }
     else if ((nextSquares[arr[j]] === "X" && nextClasses[arr[j]]==="squareAvailable" || 
@@ -266,12 +268,14 @@ if (playerCount === 0) {
   indexOfCleanWinCombos.push([aiCount, arr]);
 }
 });
-if (block !== -1) {
+//block if required
+if (block !== -1 && nextOTokens>0) {
 nextSquares[block]="O";
         nextClasses[block]="squareAvailable";
-        setOTokens(oTokens-1);
+        nextOTokens=nextOTokens-1;
         foundLegalMove=true;
 }
+//move if required
 else if (move !== -1 && placeToMove !== -1)
 {
   nextSquares[move]=null;
@@ -279,7 +283,7 @@ else if (move !== -1 && placeToMove !== -1)
   
   if (nextSquares[placeToMove] === "X"){
     nextClasses[placeToMove] = "squareUnavailable";
-    setXTokens(xTokens + 1);
+    nextXTokens=nextXTokens + 1;
   }
   else{
     nextClasses[placeToMove]="squareAvailable";
@@ -295,18 +299,18 @@ if (!foundLegalMove) {
       //get random square
       let randomCell = Math.floor(Math.random()*(max-min +1))+min;
 
-      //if empty and can place token, plance token
-      if (nextClasses[randomCell] === "squareEmpty" && oTokens>0)
+      //if empty and can place token, place token
+      if (nextClasses[randomCell] === "squareEmpty" && nextOTokens>0)
       {
         nextSquares[randomCell]="O";
         nextClasses[randomCell]="squareAvailable";
-        setOTokens(oTokens-1);
+        nextOTokens=nextOTokens-1;
         foundLegalMove=true;
         break;
         
       }
       //if full of own piece and can be moved, find spot to move to
-      if (nextSquares[randomCell] === "O" && nextClasses[randomCell] ==="squareAvailable"){
+      else if (nextSquares[randomCell] === "O" && nextClasses[randomCell] ==="squareAvailable"){
           let adj = calculateAdjacent(randomCell);
 
           //pick random direction
@@ -330,7 +334,7 @@ if (!foundLegalMove) {
                 nextClasses[randomCell]="squareEmpty";
                 nextClasses[adj[randomDirection]]="squareUnavailable";
                 nextSquares[[adj[randomDirection]]]="O";
-                setXTokens(xTokens+1);
+                nextXTokens=nextXTokens+1;
                 foundLegalMove=true;
                 break;
             }
@@ -362,8 +366,8 @@ if (!foundLegalMove) {
     } 
     setSquares(nextSquares);
     setClasses(nextClasses);
-
-   
+    setOTokens(nextOTokens);
+    setXTokens(nextXTokens);
 
     setMoveNumber(moveNumber+1);
 
